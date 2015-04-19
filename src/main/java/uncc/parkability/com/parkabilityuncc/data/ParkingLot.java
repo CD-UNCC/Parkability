@@ -11,9 +11,37 @@ import com.google.android.gms.maps.model.MarkerOptions;
  * @version 4/19/2015
  */
 public enum ParkingLot {
-    CONE_DECK_VISITOR("Cone Deck - Visitor", 35.304646, -80.734619, 100),
-    WEST_DECK("West Deck", 35.305477, -80.736604, 300),
-    LOT_15("Lot 15", 35.307945, -80.732412, 30);
+    LOT_26("Lot 26", 0, 0, 86),
+    NORTH_DECK("North Deck", 0, 0, 1171),
+    LOT_25("Lot 25", 0, 0, 497),
+    LOT_19("Lot 19", 0, 0, 261),
+    LOT_18("Lot 18", 0, 0, 94),
+    UNION_DECK("Union Deck", 0, 0, 682),
+    CRI_1("CRI 1", 0, 0, 1319),
+    CRI_2("CRI 2", 0, 0, 128),
+    LOT_23("Lot 23", 0, 0, 174),
+    LOT_14("Lot 14", 0, 0, 27),
+    WEST_DECK("West Deck", 35.305477, -80.736604, 760),
+    LOT_7A("Lot 7A", 0, 0, 37),
+    LOT_7("Lot 7", 0, 0, 43),
+    LOT_101("Lot 101", 0, 0, 60),
+    SOUTH_VILLAGE_DECK("South Village Deck", 0, 0, 1101),
+    LOT_8("Lot 8", 0, 0, 246),
+    LOT_8A("Lot 8A", 0, 0, 55),
+    MOORE_SANFORD_LOT("Moore & Sanford Lot", 0, 0, 51),
+    LOT_16("Lot 16", 0, 0, 233),
+    LOT_20("Lot 20", 0, 0, 105),
+    LOT_21("Lot 21", 0, 0, 134),
+    MARY_ALEXANDER_ROAD("Mary Alexander Road", 0, 0, 42),
+    LOT_12("Lot 12", 0, 0, 84),
+    LOT_13("Lot 13", 0, 0, 140),
+    GREEK_VILLAGE("Greek Village", 0, 0, 324),
+    LOT_6("Lot 6", 0, 0, 607),
+    LOT_5("Lot 5", 0, 0, 582),
+    LOT_5A("Lot 5A", 0, 0, 251),
+    LOT_4A("Lot 4A", 0, 0, 128),
+    EAST_DECK_3("East Deck 3", 0, 0, 804),
+    EAST_DECK_2("East Deck 2", 0, 0, 539);
 
     /** The total number of spaces a lot has */
     private int totalSpaces;
