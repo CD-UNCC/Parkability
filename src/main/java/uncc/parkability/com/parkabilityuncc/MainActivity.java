@@ -16,6 +16,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import uncc.parkability.com.parkabilityuncc.data.ParkingData;
 import uncc.parkability.com.parkabilityuncc.data.ParkingLot;
 
+/**
+ * The main activity for the app
+ * @author Austin Beeler
+ * @version 4/19/2015
+ */
 public class MainActivity extends FragmentActivity {
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private Marker[] markers;
@@ -86,6 +91,7 @@ public class MainActivity extends FragmentActivity {
         mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), size.x, size.y, 100));
     }
 
+    /** Will go through each lot and update the values based on more current parking information */
     private void updateMarkers() {
     }
 }
