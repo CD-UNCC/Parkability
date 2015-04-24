@@ -71,7 +71,6 @@ public enum ParkingLot {
         this.lng = lng;
         this.totalSpaces = totalSpaces;
     }
-
     /**  @return The total spaces this lot has */
     public int getTotalSpaces() { return totalSpaces; }
 

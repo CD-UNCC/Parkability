@@ -1,5 +1,6 @@
 package uncc.parkability.com.parkabilityuncc;
 
+import android.graphics.Color;
 import android.graphics.Point;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -12,9 +13,17 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
+import uncc.parkability.com.parkabilityuncc.data.Bus;
+import uncc.parkability.com.parkabilityuncc.data.BusRoute;
 import uncc.parkability.com.parkabilityuncc.data.ParkingData;
 import uncc.parkability.com.parkabilityuncc.data.ParkingLot;
+
+import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_NONE;
+import static uncc.parkability.com.parkabilityuncc.data.BusRoute.green49;
+import static uncc.parkability.com.parkabilityuncc.data.BusRoute.red50;
+import static uncc.parkability.com.parkabilityuncc.data.BusRoute.yellow47;
 
 /**
  * The main activity for the app
@@ -24,7 +33,6 @@ import uncc.parkability.com.parkabilityuncc.data.ParkingLot;
 public class MainActivity extends FragmentActivity {
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private Marker[] markers;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,7 +85,6 @@ public class MainActivity extends FragmentActivity {
         LatLngBounds.Builder bounds = new LatLngBounds.Builder();
 
         markers = new Marker[ParkingLot.values().length];
-
         for (ParkingLot lot : ParkingLot.values()) {
             lot.getPercent();
             markers[lot.ordinal()] = mMap.addMarker(lot.getMarkerOptions());
@@ -89,9 +96,17 @@ public class MainActivity extends FragmentActivity {
         display.getSize(size);
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), size.x, size.y, 100));
+        mMap.setTrafficEnabled(true);
+        plotRoutes();
     }
 
     /** Will go through each lot and update the values based on more current parking information */
     private void updateMarkers() {
+    }
+    //Plots the individual bus routes
+    private void plotRoutes(){
+        mMap.addPolyline(new PolylineOptions().add(red50)).setColor(Color.RED);
+        mMap.addPolyline(new PolylineOptions().add(green49)).setColor(Color.GREEN);
+        mMap.addPolyline(new PolylineOptions().add(yellow47)).setColor(Color.YELLOW);
     }
 }

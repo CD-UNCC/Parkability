@@ -9,7 +9,7 @@ import java.util.Random;
  *
  * Presently only generates random numbers
  *
- * @auther Austin Beeler
+ * @auther Austin Beeeeeeeeeeeeeeeeeeeler
  * @version 4/19/2015.
  */
 public class ParkingData {
