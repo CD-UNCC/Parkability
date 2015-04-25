@@ -69,15 +69,18 @@ public class ParkingData {
         SimpleDateFormat sdf = new SimpleDateFormat("HH");
         int hour = Integer.parseInt(sdf.format(cal.getTime()));
 
+        if (hour < 10) return lotOccupancy[lotID][0];
+        if (hour >= 18) return lotOccupancy[lotID][lotOccupancy[lotID].length - 1];
+        hour -= 10;
+
         sdf = new SimpleDateFormat("mm");
         int min = Integer.parseInt(sdf.format(cal.getTime()));
 
-        min /= 30;
+        int minIndex = min / 30;
+        if (min >= 30) min -= 30;
 
-        if (hour < 10) hour = 10;
-        if (hour > 18) { hour = 18; min = 0; }
-        hour -= 10;
+        float percent = min / 30f;
 
-        return lotOccupancy[lotID][hour * 2 + min];
+        return (int) (lotOccupancy[lotID][hour * 2 + minIndex] * percent);
     }
 }

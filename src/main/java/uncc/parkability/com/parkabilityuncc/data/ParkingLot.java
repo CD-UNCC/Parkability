@@ -1,5 +1,6 @@
 package uncc.parkability.com.parkabilityuncc.data;
 
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -85,13 +86,15 @@ public enum ParkingLot {
     /** @return The latitude and longitude as an Android friendly object */
     public LatLng getLatLng() { return new LatLng(lat, lng); }
 
+    public BitmapDescriptor getIcon() { return BitmapDescriptorFactory
+            .defaultMarker(this.getHue()) ;}
+
     /** @return The marker options for Google Maps based on the data for this lot */
     public MarkerOptions getMarkerOptions() {
         return new MarkerOptions()
             .position(this.getLatLng())
             .title(this.toString())
-            .icon(BitmapDescriptorFactory
-            .defaultMarker(this.getHue()));
+            .icon(this.getIcon());
     }
 
     /**

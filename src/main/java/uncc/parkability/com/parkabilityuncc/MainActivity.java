@@ -2,6 +2,7 @@ package uncc.parkability.com.parkabilityuncc;
 
 import android.graphics.Point;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.view.Display;
 
@@ -21,6 +22,10 @@ import uncc.parkability.com.parkabilityuncc.data.ParkingLot;
  * @version 4/19/2015
  */
 public class MainActivity extends FragmentActivity {
+    final Handler handler = new Handler();
+    final int UPDATE_DELAY = 60 * 1000; // Update each minute
+
+    private Runnable updateTask;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private Marker[] markers;
     private Polyline[] routes = new Polyline[BusRoute.values().length];
@@ -34,6 +39,24 @@ public class MainActivity extends FragmentActivity {
         plotRoute(BusRoute.RED_50);
         plotRoute(BusRoute.GREEN_49);
         plotRoute(BusRoute.YELLOW_47);
+
+        updateTask = new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    updateMap();
+                    handler.postDelayed(this, UPDATE_DELAY);
+                }
+                catch (Exception e) {
+                    // TODO: handle exception
+                }
+                finally{
+                    //also call the same runnable
+                    handler.postDelayed(this, UPDATE_DELAY);
+                }
+            }
+        };
+        handler.postDelayed(updateTask, UPDATE_DELAY);
     }
 
     @Override
@@ -94,11 +117,16 @@ public class MainActivity extends FragmentActivity {
         defaultBounds = bounds.build();
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(defaultBounds, size.x, size.y, 100));
-        mMap.setTrafficEnabled(true);
+        // mMap.setTrafficEnabled(true);
     }
 
-    /** Will go through each lot and update the values based on more current parking information */
-    private void updateMarkers() {
+    /** Updates each lot and the buses if they are shown */
+    private void updateMap() {
+        for (ParkingLot lot : ParkingLot.values()) {
+            lot.getPercent();
+            markers[lot.ordinal()].setTitle(lot.toString());
+            markers[lot.ordinal()].setIcon(lot.getIcon());
+        }
     }
 
     /**
@@ -106,9 +134,14 @@ public class MainActivity extends FragmentActivity {
      * @param route The route to show
      */
     private void plotRoute(BusRoute route) {
-        routes[route.ordinal()] = mMap.addPolyline(route.getPolyLineOptions());
+        if (routes[route.ordinal()] == null)
+            routes[route.ordinal()] = mMap.addPolyline(route.getPolyLineOptions());
     }
 
+    /**
+     * Removes the route from the map if it has been drawn
+     * @param route The route to remove
+     */
     private void hideRoute(BusRoute route) {
         if (routes[route.ordinal()] != null) {
             routes[route.ordinal()].remove();
@@ -116,6 +149,11 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
+    /**
+     * If the route has been added to the map, it will be removed
+     * If the route has not been added to the map, it will be
+     * @param route The route to toggle on the map
+     */
     private void toggleRoute(BusRoute route) {
          if (routes[route.ordinal()] != null)
              plotRoute(route);
