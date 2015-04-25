@@ -1,29 +1,19 @@
 package uncc.parkability.com.parkabilityuncc;
 
-import android.graphics.Color;
 import android.graphics.Point;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.Display;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.model.Polyline;
 
-import uncc.parkability.com.parkabilityuncc.data.Bus;
 import uncc.parkability.com.parkabilityuncc.data.BusRoute;
-import uncc.parkability.com.parkabilityuncc.data.ParkingData;
 import uncc.parkability.com.parkabilityuncc.data.ParkingLot;
-
-import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_NONE;
-import static uncc.parkability.com.parkabilityuncc.data.BusRoute.green49;
-import static uncc.parkability.com.parkabilityuncc.data.BusRoute.red50;
-import static uncc.parkability.com.parkabilityuncc.data.BusRoute.yellow47;
 
 /**
  * The main activity for the app
@@ -33,11 +23,17 @@ import static uncc.parkability.com.parkabilityuncc.data.BusRoute.yellow47;
 public class MainActivity extends FragmentActivity {
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private Marker[] markers;
+    private Polyline[] routes = new Polyline[BusRoute.values().length];
+    private LatLngBounds defaultBounds;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setUpMapIfNeeded();
+        plotRoute(BusRoute.RED_50);
+        plotRoute(BusRoute.GREEN_49);
+        plotRoute(BusRoute.YELLOW_47);
     }
 
     @Override
@@ -95,18 +91,35 @@ public class MainActivity extends FragmentActivity {
         Point size = new Point();
         display.getSize(size);
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), size.x, size.y, 100));
+        defaultBounds = bounds.build();
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(defaultBounds, size.x, size.y, 100));
         mMap.setTrafficEnabled(true);
-        plotRoutes();
     }
 
     /** Will go through each lot and update the values based on more current parking information */
     private void updateMarkers() {
     }
-    //Plots the individual bus routes
-    private void plotRoutes(){
-        mMap.addPolyline(new PolylineOptions().add(red50)).setColor(Color.RED);
-        mMap.addPolyline(new PolylineOptions().add(green49)).setColor(Color.GREEN);
-        mMap.addPolyline(new PolylineOptions().add(yellow47)).setColor(Color.YELLOW);
+
+    /**
+     * Plots the given BusRoute on the map
+     * @param route The route to show
+     */
+    private void plotRoute(BusRoute route) {
+        routes[route.ordinal()] = mMap.addPolyline(route.getPolyLineOptions());
+    }
+
+    private void hideRoute(BusRoute route) {
+        if (routes[route.ordinal()] != null) {
+            routes[route.ordinal()].remove();
+            routes[route.ordinal()] = null;
+        }
+    }
+
+    private void toggleRoute(BusRoute route) {
+         if (routes[route.ordinal()] != null)
+             plotRoute(route);
+         else
+             hideRoute(route);
     }
 }

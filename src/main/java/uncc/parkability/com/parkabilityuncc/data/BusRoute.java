@@ -1,16 +1,19 @@
 package uncc.parkability.com.parkabilityuncc.data;
 
+import android.graphics.Color;
+
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 /**
  * An enum for the static information for each of the bus routes used on campus
  *
- * @author Austin Beeeeeeeeeeeeeeeler
- * @version 4/19/15
+ * @author Austin Beeeeeeeeeeeeeeeeler
+ * @version 4/25/15
  */
-public class BusRoute {
-
-    public static LatLng[] red50 = {new LatLng(35.3079548803,-80.7330054045),
+public enum BusRoute {
+    RED_50(Color.RED,
+            new LatLng(35.3079548803,-80.7330054045),
             new LatLng(35.3079811463,-80.7333379984),
             new LatLng(35.3079636356,-80.7336491346),
             new LatLng(35.3079286143,-80.7342338562),
@@ -193,9 +196,10 @@ public class BusRoute {
             new LatLng(35.3079636356,-80.7308757305),
             new LatLng(35.3079548803,-80.7316696644),
             new LatLng(35.3079636356,-80.732640624),
-            new LatLng(35.3079548803,-80.7330322266)};
+            new LatLng(35.3079548803,-80.7330322266)),
 
-    public static LatLng[] green49 = {new LatLng(35.30117,-80.7358620117),
+   GREEN_49(Color.GREEN,
+            new LatLng(35.30117,-80.7358620117),
             new LatLng(35.30117,-80.73417),
             new LatLng(35.30126,-80.73369),
             new LatLng(35.30139,-80.7334),
@@ -367,9 +371,10 @@ public class BusRoute {
             new LatLng(35.3013749706,-80.737388134),
             new LatLng(35.3012261174,-80.737195015),
             new LatLng(35.3011692029,-80.7369267941),
-            new LatLng(35.30117,-80.73586)};
+            new LatLng(35.30117,-80.73586)),
 
-    public static LatLng[] yellow47 = {new LatLng(35.30117,-80.73586),
+    YELLOW_47(Color.YELLOW,
+            new LatLng(35.30117,-80.73586),
             new LatLng(35.3011823371,-80.7368302345),
             new LatLng(35.3012173614,-80.7370769978),
             new LatLng(35.301440641,-80.7372325659),
@@ -458,6 +463,19 @@ public class BusRoute {
             new LatLng(35.30153,-80.73322),
             new LatLng(35.30129,-80.73361),
             new LatLng(35.30119,-80.73394),
-            new LatLng(35.30117,-80.73586)};
+            new LatLng(35.30117,-80.73586));
 
+    private LatLng[] segments;
+    private int color;
+
+    private BusRoute(int color, LatLng... segments) {
+        this.color = color;
+        this.segments = segments;
+    }
+
+    public PolylineOptions getPolyLineOptions() {
+        return new PolylineOptions()
+            .add(segments)
+            .color(color);
+    }
 }
