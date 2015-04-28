@@ -1,64 +1,89 @@
 package uncc.parkability.com.parkabilityuncc.data;
 
-import android.util.Log;
-
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.StatusLine;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URL;
+import java.util.ArrayList;
 
 /**
  * A bus that has a route on campus. Can be updated via the BusAPI
  *
  * @author  Austin Beeeeeeeeeeler
- * @version 4/19/15
+ * @version 4/27/15
  */
 public class Bus {
-    private HttpClient client = new DefaultHttpClient();
-    private HttpGet request = new HttpGet();
-    //Hash ID or name to identifier in json data of bus location?
+    /**
+     * Parses a JSON string and returns the equivalent array of Bus objects
+     * @param json The JSON string to parse
+     * @return The equivalent array of Bus objects
+     */
+    public static Bus[] parseJson(String json) {
+        try {
+            JSONArray parent = new JSONArray(json);
+            ArrayList<Bus> buses = new ArrayList<Bus>();
+            for (int i = 0; i < parent.length(); i++){
+                JSONObject bus = parent.getJSONObject(i);
+                buses.add(new Bus(
+                    bus.getString("Name"),
+                    bus.getDouble("Latitude"),
+                    bus.getDouble("Longitude"),
+                    bus.getInt("RouteID"),
+                    bus.getInt("VehicleID")
+                ));
+            }
+            return buses.toArray(new Bus[0]);
+        } catch (JSONException e) { }
+
+        return new Bus[0];
+    }
+
     private String name;
     private LatLng position = null;
-    private double lat, lng = 0;
-    public String url = "  ";
-    public Bus(String name, LatLng position){
+    private BusRoute route;
+    private int vehicleID;
+
+    /**
+     * Constructor for a new Bus object
+     * @param name The name of the Bus. Displayed on the marker
+     * @param lat The latitude part of the position
+     * @param lng The longitude part of the position
+     * @param routeID The route id from JSON to convert to a BusRoute
+     * @param vehicleID The vehicle id from JSON to prevent duplicates
+     */
+    public Bus(String name, double lat, double lng, int routeID, int vehicleID){
         this.name = name;
-        this.position = position;
+        this.position = new LatLng(lat, lng);
+        this.route = BusRoute.getRouteFromID(routeID);
+        this.vehicleID = vehicleID;
     }
-    public String getName(){
-        return this.name;
-    }
-    public LatLng getPosition(){
-        return this.position;
-    }
-    public void update()throws Exception{
-/*        request.setURI(new URI("http://nextride.uncc.edu/Services/JSONPRelay.svc/GetMapVehiclePoints"));
-        HttpResponse response = client.execute(request);
-        BufferedReader in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-        String line = "";
-        while ((line = in.readLine()) != null) {
-            JSONObject data = new JSONObject(line);
 
-            if (data.has("Longitude")) {
-                double temp = data.getDouble("Latitude");
-                System.out.println(temp);
-            }
+    /** @return The name of the bus */
+    public String getName(){ return this.name; }
 
-        }*/
+    /** @return The latitude and longitude making up this bus's position */
+    public LatLng getPosition(){ return this.position; }
+
+    /** @return The BusRoute this bus follows */
+    public BusRoute getRoute() { return route; }
+
+    /** @return The vehicle ID of this bus */
+    public int getVehicleID() { return vehicleID; }
+
+    @Override
+    /** @return The String representation of this bus */
+    public String toString() { return name; }
+
+    /** @return The MarkerOptions for this bus to generate a new marker with */
+    public MarkerOptions getMarkerOptions() {
+        return new MarkerOptions()
+                .title(this.toString())
+                .position(this.position)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
     }
 
 }

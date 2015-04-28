@@ -9,7 +9,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
  * An enum for the static information for each of the bus routes used on campus
  *
  * @author Austin Beeeeeeeeeeeeeeeeler
- * @version 4/25/15
+ * @version 4/27/15
  */
 public enum BusRoute {
     RED_50(Color.RED,
@@ -465,6 +465,20 @@ public enum BusRoute {
             new LatLng(35.30119,-80.73394),
             new LatLng(35.30117,-80.73586));
 
+    /**
+     * Gets a route based on the NextRide API value
+     * @param id The RouteID found in JSON
+     * @return The BusRoute associated with that ID
+     */
+    public static BusRoute getRouteFromID(int id) {
+        switch (id) {
+            case 2: return BusRoute.RED_50;
+            case 3: return BusRoute.GREEN_49;
+            case 4: return BusRoute.YELLOW_47;
+            default:  return null;
+        }
+    }
+
     private LatLng[] segments;
     private int color;
 
@@ -473,6 +487,7 @@ public enum BusRoute {
         this.segments = segments;
     }
 
+    /** @return The polyline formed by the segments of this route */
     public PolylineOptions getPolyLineOptions() {
         return new PolylineOptions()
             .add(segments)

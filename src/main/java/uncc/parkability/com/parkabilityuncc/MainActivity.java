@@ -13,25 +13,31 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polyline;
 
+import uncc.parkability.com.parkabilityuncc.data.Bus;
+import uncc.parkability.com.parkabilityuncc.data.BusAPI;
 import uncc.parkability.com.parkabilityuncc.data.BusRoute;
 import uncc.parkability.com.parkabilityuncc.data.ParkingLot;
 
 /**
  * The main activity for the app
  * @author Austin Beeler
- * @version 4/19/2015
+ * @version 4/27/2015
  */
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements BusAPI.BusHandler {
     final Handler handler = new Handler();
-    final int UPDATE_DELAY = 60 * 1000; // Update each minute
+    final int UPDATE_DELAY = 10 * 1000; // Update three times each minute
+    final String NEXT_RIDE_API_VEHICLE_POINTS_URL
+            = "http://nextride.uncc.edu/Services/JSONPRelay.svc/GetMapVehiclePoints";
 
     private Runnable updateTask;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
-    private Marker[] markers;
+    private Marker[] busMarkers;
+    private Marker[] lotMarkers;
     private Polyline[] routes = new Polyline[BusRoute.values().length];
     private LatLngBounds defaultBounds;
 
     @Override
+    /** Called when the activity is first started */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -60,6 +66,7 @@ public class MainActivity extends FragmentActivity {
     }
 
     @Override
+    /** Called when the activity is resumed after being paused */
     protected void onResume() {
         super.onResume();
         setUpMapIfNeeded();
@@ -103,10 +110,10 @@ public class MainActivity extends FragmentActivity {
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         LatLngBounds.Builder bounds = new LatLngBounds.Builder();
 
-        markers = new Marker[ParkingLot.values().length];
+        lotMarkers = new Marker[ParkingLot.values().length];
         for (ParkingLot lot : ParkingLot.values()) {
             lot.getPercent();
-            markers[lot.ordinal()] = mMap.addMarker(lot.getMarkerOptions());
+            lotMarkers[lot.ordinal()] = mMap.addMarker(lot.getMarkerOptions());
             bounds.include(lot.getLatLng());
         }
 
@@ -118,15 +125,19 @@ public class MainActivity extends FragmentActivity {
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(defaultBounds, size.x, size.y, 100));
         // mMap.setTrafficEnabled(true);
+        new BusAPI(this).execute(NEXT_RIDE_API_VEHICLE_POINTS_URL);
+        toggleLots();
     }
 
     /** Updates each lot and the buses if they are shown */
     private void updateMap() {
         for (ParkingLot lot : ParkingLot.values()) {
             lot.getPercent();
-            markers[lot.ordinal()].setTitle(lot.toString());
-            markers[lot.ordinal()].setIcon(lot.getIcon());
+            lotMarkers[lot.ordinal()].setTitle(lot.toString());
+            lotMarkers[lot.ordinal()].setIcon(lot.getIcon());
         }
+
+        new BusAPI(this).execute(NEXT_RIDE_API_VEHICLE_POINTS_URL);
     }
 
     /**
@@ -154,10 +165,35 @@ public class MainActivity extends FragmentActivity {
      * If the route has not been added to the map, it will be
      * @param route The route to toggle on the map
      */
-    private void toggleRoute(BusRoute route) {
+    public void toggleRoute(BusRoute route) {
          if (routes[route.ordinal()] != null)
              plotRoute(route);
          else
              hideRoute(route);
+    }
+
+    /** Sets the visibility of the parking lot markers to the opposite of what they are now */
+    public void toggleLots() {
+        boolean toSet = !lotMarkers[0].isVisible();
+
+        for (Marker m : lotMarkers)
+            m.setVisible(toSet);
+    }
+
+    @Override
+    /**
+     * Updates the bus markers using new information pulled from the server
+     * @param buses The new bus information to add to the map
+     */
+    public void handleBuses(Bus[] buses) {
+        if (busMarkers != null)
+            for (Marker m : busMarkers)
+                m.remove();
+
+        busMarkers = new Marker[buses.length];
+
+        for (int i = 0; i < buses.length; i++) {
+            busMarkers[i] = mMap.addMarker(buses[i].getMarkerOptions());
+        }
     }
 }
