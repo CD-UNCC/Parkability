@@ -7,4 +7,13 @@
         android:icon="@drawable/ic_rezoom"
         android:title="@string/action_rezoom"
         parkability:showAsAction="always" />
+    <item android:id="@+id/action_toggle_lots"
+        android:title="@string/action_toggle_lots"
+        parkability:showAsAction="never" />
+    <item android:id="@+id/action_toggle_buses"
+        android:title="@string/action_toggle_buses"
+        parkability:showAsAction="never" />
+    <item android:id="@+id/action_toggle_routes"
+        android:title="@string/action_toggle_routes"
+        parkability:showAsAction="never" />
 </menu>

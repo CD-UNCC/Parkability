@@ -2,4 +2,7 @@
     <string name="app_name">Parkability UNCC</string>
     <string name="title_activity_main">Parkability</string>
     <string name="action_rezoom">Rezoom Map</string>
+    <string name="action_toggle_lots">Toggle Lot Visibility</string>
+    <string name="action_toggle_buses">Toggle Bus Visibility</string>
+    <string name="action_toggle_routes">Toggle Route Visibility</string>
 </resources>

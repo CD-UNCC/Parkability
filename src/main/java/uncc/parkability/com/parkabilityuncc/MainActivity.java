@@ -96,6 +96,18 @@ public class MainActivity extends ActionBarActivity implements BusAPI.BusHandler
                 rezoomMap();
                 return true;
 
+            case R.id.action_toggle_lots:
+                toggleLots();
+                return true;
+
+            case R.id.action_toggle_buses:
+                toggleBuses();
+                return true;
+
+            case R.id.action_toggle_routes:
+                toggleRoutes();
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -155,8 +167,6 @@ public class MainActivity extends ActionBarActivity implements BusAPI.BusHandler
 
         // mMap.setTrafficEnabled(true);
         updateBuses();
-        toggleLots();
-        toggleLots();
     }
 
     /** Will rezoom the map to show the entire campus */
@@ -208,12 +218,38 @@ public class MainActivity extends ActionBarActivity implements BusAPI.BusHandler
              hideRoute(route);
     }
 
+    public void toggleRoutes() {
+        boolean showRoutes = true;
+
+        for (int i = 0; i < routes.length; i++)
+            if (routes[i] != null) {
+                showRoutes = false;
+                break;
+            }
+
+        for (BusRoute route : BusRoute.values())
+            if (showRoutes)
+                plotRoute(route);
+            else
+                hideRoute(route);
+    }
+
     /** Sets the visibility of the parking lot markers to the opposite of what they are now */
     public void toggleLots() {
         boolean toSet = !lotMarkers[0].isVisible();
 
         for (Marker m : lotMarkers)
             m.setVisible(toSet);
+    }
+
+    /** Sets the visibility of the bus markers to the opposite of what they are now */
+    public void toggleBuses() {
+        if (busMarkers.length > 0) {
+            boolean toSet = !busMarkers[0].isVisible();
+
+            for (Marker m : busMarkers)
+                m.setVisible(toSet);
+        }
     }
 
     /**
