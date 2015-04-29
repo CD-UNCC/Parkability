@@ -127,6 +127,7 @@ public class MainActivity extends FragmentActivity implements BusAPI.BusHandler 
         // mMap.setTrafficEnabled(true);
         new BusAPI(this).execute(NEXT_RIDE_API_VEHICLE_POINTS_URL);
         toggleLots();
+        toggleLots();
     }
 
     /** Updates each lot and the buses if they are shown */

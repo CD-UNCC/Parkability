@@ -42,10 +42,11 @@ public class Bus {
         return new Bus[0];
     }
 
-    private String name;
+    private String name, realName;
     private LatLng position = null;
     private BusRoute route;
     private int vehicleID;
+    private int routeID;
 
     /**
      * Constructor for a new Bus object
@@ -60,10 +61,26 @@ public class Bus {
         this.position = new LatLng(lat, lng);
         this.route = BusRoute.getRouteFromID(routeID);
         this.vehicleID = vehicleID;
+        this.routeID = routeID;
+        this.realName = getRealName(routeID);
+    }
+
+    private String getRealName(int id) {
+        String realName = "";
+        switch(id){
+            case 1: realName = "SafeRide";break;
+            case 2: realName = "Red 50 - " + name;break;
+            case 3: realName = "Green 49 - " + name;break;
+            case 4: realName = "Yellow 47 - " + name;break;
+            default: realName = name;break;
+        }
+        return realName;
     }
 
     /** @return The name of the bus */
-    public String getName(){ return this.name; }
+    public String getName(){
+        return this.name;
+    }
 
     /** @return The latitude and longitude making up this bus's position */
     public LatLng getPosition(){ return this.position; }
@@ -76,12 +93,12 @@ public class Bus {
 
     @Override
     /** @return The String representation of this bus */
-    public String toString() { return name; }
+    public String toString() { return realName; }
 
     /** @return The MarkerOptions for this bus to generate a new marker with */
     public MarkerOptions getMarkerOptions() {
         return new MarkerOptions()
-                .title(this.toString())
+                .title(this.realName)
                 .position(this.position)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
     }
