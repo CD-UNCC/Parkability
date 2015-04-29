@@ -51,7 +51,6 @@ public class MainActivity extends FragmentActivity implements BusAPI.BusHandler 
             public void run() {
                 try{
                     updateMap();
-                    handler.postDelayed(this, UPDATE_DELAY);
                 }
                 catch (Exception e) {
                     // TODO: handle exception
