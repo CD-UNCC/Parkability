@@ -3,8 +3,10 @@ package uncc.parkability.com.parkabilityuncc;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Display;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -23,9 +25,9 @@ import uncc.parkability.com.parkabilityuncc.data.ParkingLot;
  * @author Austin Beeler
  * @version 4/27/2015
  */
-public class MainActivity extends FragmentActivity implements BusAPI.BusHandler {
+public class MainActivity extends ActionBarActivity implements BusAPI.BusHandler {
     final Handler handler = new Handler();
-    final int UPDATE_DELAY = 10 * 1000; // Update three times each minute
+    final int UPDATE_DELAY = 10 * 1000; // Update every 10 seconds
     final String NEXT_RIDE_API_VEHICLE_POINTS_URL
             = "http://nextride.uncc.edu/Services/JSONPRelay.svc/GetMapVehiclePoints";
 
@@ -34,6 +36,9 @@ public class MainActivity extends FragmentActivity implements BusAPI.BusHandler 
     private Marker[] busMarkers;
     private Marker[] lotMarkers;
     private Polyline[] routes = new Polyline[BusRoute.values().length];
+
+    private final int MAP_PADDING = 100;
+    private Point displaySize;
     private LatLngBounds defaultBounds;
 
     @Override
@@ -69,6 +74,31 @@ public class MainActivity extends FragmentActivity implements BusAPI.BusHandler 
     protected void onResume() {
         super.onResume();
         setUpMapIfNeeded();
+    }
+
+    @Override
+    /** Called when the activity is created to initialize the menu */
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    /**
+     * Handles a menu item being clicked by the user
+     * @param item The item that was clicked
+     * @return Whether the action was handled
+     */
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar actions
+        switch (item.getItemId()) {
+            case R.id.action_rezoom:
+                rezoomMap();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     /**
@@ -117,16 +147,22 @@ public class MainActivity extends FragmentActivity implements BusAPI.BusHandler 
         }
 
         Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
+        displaySize = new Point();
+        display.getSize(displaySize);
 
         defaultBounds = bounds.build();
+        rezoomMap();
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(defaultBounds, size.x, size.y, 100));
         // mMap.setTrafficEnabled(true);
-        new BusAPI(this).execute(NEXT_RIDE_API_VEHICLE_POINTS_URL);
+        updateBuses();
         toggleLots();
         toggleLots();
+    }
+
+    /** Will rezoom the map to show the entire campus */
+    public void rezoomMap() {
+        mMap.animateCamera(CameraUpdateFactory
+            .newLatLngBounds(defaultBounds, displaySize.x, displaySize.y, MAP_PADDING));
     }
 
     /** Updates each lot and the buses if they are shown */
@@ -137,7 +173,7 @@ public class MainActivity extends FragmentActivity implements BusAPI.BusHandler 
             lotMarkers[lot.ordinal()].setIcon(lot.getIcon());
         }
 
-        new BusAPI(this).execute(NEXT_RIDE_API_VEHICLE_POINTS_URL);
+        updateBuses();
     }
 
     /**
@@ -178,6 +214,14 @@ public class MainActivity extends FragmentActivity implements BusAPI.BusHandler 
 
         for (Marker m : lotMarkers)
             m.setVisible(toSet);
+    }
+
+    /**
+     * Makes the appropriate API calls to acquire new bus information and sends it back to this
+     * activity to handle the update of the markers
+     */
+    public void updateBuses() {
+        new BusAPI(this).execute(NEXT_RIDE_API_VEHICLE_POINTS_URL);
     }
 
     @Override

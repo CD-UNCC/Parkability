@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Parkability UNCC</string>
     <string name="title_activity_main">Parkability</string>
+    <string name="action_rezoom">Rezoom Map</string>
 </resources>
