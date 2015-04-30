@@ -44,26 +44,36 @@ public enum ParkingLot {
     EAST_DECK_3("East Deck 3", 35.305971, -80.726122, 804),
     EAST_DECK_2("East Deck 2", 35.305358, -80.726894, 539);
 
-    /** The total number of spaces a lot has */
+    /**
+     * The total number of spaces a lot has
+     */
     private int totalSpaces;
 
-    /** The name of the lot for display purposes */
+    /**
+     * The name of the lot for display purposes
+     */
     private String name;
 
-    /** The latitude coordinate of the lot */
+    /**
+     * The latitude coordinate of the lot
+     */
     private double lat;
-    /** The longitude coordinate of the lot */
+    /**
+     * The longitude coordinate of the lot
+     */
     private double lng;
 
-    /** The percent of spaces used */
+    /**
+     * The percent of spaces used
+     */
     private float percent;
 
     /**
      * Creates a new lot. Private due to enum requirements
      *
-     * @param name The name of the lot
-     * @param lat The latitude of the lot
-     * @param lng The longitude of the lot
+     * @param name        The name of the lot
+     * @param lat         The latitude of the lot
+     * @param lng         The longitude of the lot
      * @param totalSpaces The total number of spaces the lot has
      */
     private ParkingLot(String name, double lat, double lng, int totalSpaces) {
@@ -72,38 +82,62 @@ public enum ParkingLot {
         this.lng = lng;
         this.totalSpaces = totalSpaces;
     }
-    /**  @return The total spaces this lot has */
-    public int getTotalSpaces() { return totalSpaces; }
 
-    /** @return The number of spaces currently occupied in this lot */
-    public int getSpacesUsed() { return ParkingData.getSpaceData(this.ordinal()); }
+    /**
+     * @return The total spaces this lot has
+     */
+    public int getTotalSpaces() {
+        return totalSpaces;
+    }
 
-    /** Updates the percent of spaces filled */
+    /**
+     * @return The number of spaces currently occupied in this lot
+     */
+    public int getSpacesUsed() {
+        return ParkingData.getSpaceData(this.ordinal());
+    }
+
+    /**
+     * Updates the percent of spaces filled
+     */
     public void getPercent() {
         percent = ((float) getSpacesUsed() / totalSpaces);
     }
 
-    /** @return The latitude and longitude as an Android friendly object */
-    public LatLng getLatLng() { return new LatLng(lat, lng); }
+    /**
+     * @return The latitude and longitude as an Android friendly object
+     */
+    public LatLng getLatLng() {
+        return new LatLng(lat, lng);
+    }
 
-    public BitmapDescriptor getIcon() { return BitmapDescriptorFactory
-            .defaultMarker(this.getHue()) ;}
+    public BitmapDescriptor getIcon() {
+        return BitmapDescriptorFactory
+                .defaultMarker(this.getHue());
+    }
 
-    /** @return The marker options for Google Maps based on the data for this lot */
+    /**
+     * @return The marker options for Google Maps based on the data for this lot
+     */
     public MarkerOptions getMarkerOptions() {
         return new MarkerOptions()
-            .position(this.getLatLng())
-            .title(this.toString())
-            .icon(this.getIcon());
+                .position(this.getLatLng())
+                .title(this.toString())
+                .icon(this.getIcon());
     }
 
     /**
      * Gets the hue for the marker based on its occupancy
+     *
      * @return A value from 0 (Red) to 120 (Green)
      */
-    public float getHue() { return (1 - this.percent) * BitmapDescriptorFactory.HUE_GREEN; }
+    public float getHue() {
+        return (1 - this.percent) * BitmapDescriptorFactory.HUE_GREEN;
+    }
 
     @Override
     /** @return The string representation of the lot. Used as the marker title */
-    public String toString() { return String.format("%s (%d%%)", this.name, (int) (this.percent * 100)); }
+    public String toString() {
+        return String.format("%s (%d%%)", this.name, (int) (this.percent * 100));
+    }
 }

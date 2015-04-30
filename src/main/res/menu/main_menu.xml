@@ -3,17 +3,21 @@
     xmlns:parkability="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity">
-    <item android:id="@+id/action_rezoom"
+    <item
+        android:id="@+id/action_rezoom"
         android:icon="@drawable/ic_rezoom"
         android:title="@string/action_rezoom"
         parkability:showAsAction="always" />
-    <item android:id="@+id/action_toggle_lots"
+    <item
+        android:id="@+id/action_toggle_lots"
         android:title="@string/action_toggle_lots"
         parkability:showAsAction="never" />
-    <item android:id="@+id/action_toggle_buses"
+    <item
+        android:id="@+id/action_toggle_buses"
         android:title="@string/action_toggle_buses"
         parkability:showAsAction="never" />
-    <item android:id="@+id/action_toggle_routes"
+    <item
+        android:id="@+id/action_toggle_routes"
         android:title="@string/action_toggle_routes"
         parkability:showAsAction="never" />
 </menu>

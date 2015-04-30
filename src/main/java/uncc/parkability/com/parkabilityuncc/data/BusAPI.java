@@ -18,14 +18,19 @@ import java.io.InputStreamReader;
  * @version 4/27/2015
  */
 public class BusAPI extends AsyncTask<String, Void, Bus[]> {
-    /** The handler to call when the bus data has been acquired and parsed */
+    /**
+     * The handler to call when the bus data has been acquired and parsed
+     */
     private BusHandler handler;
 
     /**
      * Create a new AsyncTask to query the NextRide API
+     *
      * @param handler The handler to call when the bus data has been acquired and parsed
      */
-    public BusAPI(BusHandler handler) { this.handler = handler; }
+    public BusAPI(BusHandler handler) {
+        this.handler = handler;
+    }
 
     @Override
     protected Bus[] doInBackground(String... params) {
@@ -53,7 +58,9 @@ public class BusAPI extends AsyncTask<String, Void, Bus[]> {
         handler.handleBuses(buses);
     }
 
-    /** The interface used to call an object to handle the buses parsed by the API */
+    /**
+     * The interface used to call an object to handle the buses parsed by the API
+     */
     public static interface BusHandler {
         public void handleBuses(Bus[] buses);
     }

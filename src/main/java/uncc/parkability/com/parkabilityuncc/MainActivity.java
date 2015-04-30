@@ -22,8 +22,9 @@ import uncc.parkability.com.parkabilityuncc.data.ParkingLot;
 
 /**
  * The main activity for the app
+ *
  * @author Austin Beeler
- * @version 4/27/2015
+ * @version 4/30/2015
  */
 public class MainActivity extends ActionBarActivity implements BusAPI.BusHandler {
     final Handler handler = new Handler();
@@ -54,13 +55,11 @@ public class MainActivity extends ActionBarActivity implements BusAPI.BusHandler
         updateTask = new Runnable() {
             @Override
             public void run() {
-                try{
+                try {
                     updateMap();
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     // TODO: handle exception
-                }
-                finally{
+                } finally {
                     //also call the same runnable
                     handler.postDelayed(this, UPDATE_DELAY);
                 }
@@ -169,18 +168,26 @@ public class MainActivity extends ActionBarActivity implements BusAPI.BusHandler
         updateBuses();
     }
 
-    /** Will rezoom the map to show the entire campus */
+    /**
+     * Will rezoom the map to show the entire campus
+     */
     public void rezoomMap() {
         mMap.animateCamera(CameraUpdateFactory
-            .newLatLngBounds(defaultBounds, displaySize.x, displaySize.y, MAP_PADDING));
+                .newLatLngBounds(defaultBounds, displaySize.x, displaySize.y, MAP_PADDING));
     }
 
-    /** Updates each lot and the buses if they are shown */
+    /**
+     * Updates each lot and the buses if they are shown
+     */
     private void updateMap() {
+        boolean selected;
         for (ParkingLot lot : ParkingLot.values()) {
+            selected = lotMarkers[lot.ordinal()].isInfoWindowShown();
             lot.getPercent();
             lotMarkers[lot.ordinal()].setTitle(lot.toString());
             lotMarkers[lot.ordinal()].setIcon(lot.getIcon());
+            if (selected)
+                lotMarkers[lot.ordinal()].showInfoWindow();
         }
 
         updateBuses();
@@ -188,6 +195,7 @@ public class MainActivity extends ActionBarActivity implements BusAPI.BusHandler
 
     /**
      * Plots the given BusRoute on the map
+     *
      * @param route The route to show
      */
     private void plotRoute(BusRoute route) {
@@ -197,6 +205,7 @@ public class MainActivity extends ActionBarActivity implements BusAPI.BusHandler
 
     /**
      * Removes the route from the map if it has been drawn
+     *
      * @param route The route to remove
      */
     private void hideRoute(BusRoute route) {
@@ -209,13 +218,14 @@ public class MainActivity extends ActionBarActivity implements BusAPI.BusHandler
     /**
      * If the route has been added to the map, it will be removed
      * If the route has not been added to the map, it will be
+     *
      * @param route The route to toggle on the map
      */
     public void toggleRoute(BusRoute route) {
-         if (routes[route.ordinal()] != null)
-             plotRoute(route);
-         else
-             hideRoute(route);
+        if (routes[route.ordinal()] != null)
+            plotRoute(route);
+        else
+            hideRoute(route);
     }
 
     public void toggleRoutes() {
@@ -234,7 +244,9 @@ public class MainActivity extends ActionBarActivity implements BusAPI.BusHandler
                 hideRoute(route);
     }
 
-    /** Sets the visibility of the parking lot markers to the opposite of what they are now */
+    /**
+     * Sets the visibility of the parking lot markers to the opposite of what they are now
+     */
     public void toggleLots() {
         boolean toSet = !lotMarkers[0].isVisible();
 
@@ -242,7 +254,9 @@ public class MainActivity extends ActionBarActivity implements BusAPI.BusHandler
             m.setVisible(toSet);
     }
 
-    /** Sets the visibility of the bus markers to the opposite of what they are now */
+    /**
+     * Sets the visibility of the bus markers to the opposite of what they are now
+     */
     public void toggleBuses() {
         if (busMarkers.length > 0) {
             boolean toSet = !busMarkers[0].isVisible();
@@ -266,14 +280,20 @@ public class MainActivity extends ActionBarActivity implements BusAPI.BusHandler
      * @param buses The new bus information to add to the map
      */
     public void handleBuses(Bus[] buses) {
+        String selectedName = null;
         if (busMarkers != null)
-            for (Marker m : busMarkers)
+            for (Marker m : busMarkers) {
+                if (m.isInfoWindowShown())
+                    selectedName = m.getTitle();
                 m.remove();
+            }
 
         busMarkers = new Marker[buses.length];
 
         for (int i = 0; i < buses.length; i++) {
             busMarkers[i] = mMap.addMarker(buses[i].getMarkerOptions());
+            if (busMarkers[i].getTitle().equals(selectedName))
+                busMarkers[i].showInfoWindow();
         }
     }
 }
